@@ -16,19 +16,43 @@ public class CorsConfig {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
+        // Frontend
         configuration.setAllowedOrigins(
                 List.of("https://bankapp.sumiranpaparkar.me")
         );
 
+        // HTTP methods
         configuration.setAllowedMethods(
-                List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                List.of(
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE",
+                        "OPTIONS"
+                )
         );
 
+        // Request headers
         configuration.setAllowedHeaders(
-                List.of("*")
+                List.of(
+                        "Authorization",
+                        "Content-Type",
+                        "Accept",
+                        "Origin",
+                        "X-Requested-With"
+                )
         );
 
+        // Response headers exposed to frontend
+        configuration.setExposedHeaders(
+                List.of("Authorization")
+        );
+
+        // Credentials
         configuration.setAllowCredentials(true);
+
+        // Cache preflight response
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
