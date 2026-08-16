@@ -33,8 +33,8 @@ apiClient.interceptors.response.use(
 
 // ─── Auth APIs ───────────────────────────────────────────
 export const authApi = {
-  register: (data) => apiClient.post('/auth/register', data),
-  login: (data) => apiClient.post('/auth/login', data),
+  register: (data) => apiClient.post('/api/auth/register', data),
+login: (data) => apiClient.post('/api/auth/login', data),
 }
 
 // ─── Account APIs ─────────────────────────────────────────
