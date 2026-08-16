@@ -1,12 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
 import { AuthProvider } from './context/AuthContext'
-
 import ProtectedRoute from './components/ProtectedRoute'
+import Layout from './components/Layout'
 
 import Login from './pages/Login'
 import Register from './pages/Register'
 import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
+
 import Dashboard from './pages/Dashboard'
 import Accounts from './pages/Accounts'
 import Deposit from './pages/Deposit'
@@ -15,13 +17,14 @@ import Transfer from './pages/Transfer'
 import Transactions from './pages/Transactions'
 import Admin from './pages/Admin'
 
+
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <Routes>
 
-          {/* ───────────── PUBLIC ROUTES ───────────── */}
+          {/* ================= PUBLIC ROUTES ================= */}
 
           <Route
             path="/login"
@@ -38,14 +41,21 @@ function App() {
             element={<ForgotPassword />}
           />
 
+          <Route
+            path="/reset-password"
+            element={<ResetPassword />}
+          />
 
-          {/* ───────────── PROTECTED ROUTES ───────────── */}
+
+          {/* ================= PROTECTED ROUTES ================= */}
 
           <Route
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <Layout>
+                  <Dashboard />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -54,7 +64,9 @@ function App() {
             path="/accounts"
             element={
               <ProtectedRoute>
-                <Accounts />
+                <Layout>
+                  <Accounts />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -63,7 +75,9 @@ function App() {
             path="/deposit"
             element={
               <ProtectedRoute>
-                <Deposit />
+                <Layout>
+                  <Deposit />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -72,7 +86,9 @@ function App() {
             path="/withdraw"
             element={
               <ProtectedRoute>
-                <Withdraw />
+                <Layout>
+                  <Withdraw />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -81,34 +97,41 @@ function App() {
             path="/transfer"
             element={
               <ProtectedRoute>
-                <Transfer />
+                <Layout>
+                  <Transfer />
+                </Layout>
               </ProtectedRoute>
             }
           />
 
+          {/* IMPORTANT: /transactions */}
           <Route
-            path="/history"
+            path="/transactions"
             element={
               <ProtectedRoute>
-                <Transactions />
+                <Layout>
+                  <Transactions />
+                </Layout>
               </ProtectedRoute>
             }
           />
 
 
-          {/* ───────────── ADMIN ROUTE ───────────── */}
+          {/* ================= ADMIN ROUTE ================= */}
 
           <Route
             path="/admin"
             element={
               <ProtectedRoute adminOnly>
-                <Admin />
+                <Layout>
+                  <Admin />
+                </Layout>
               </ProtectedRoute>
             }
           />
 
 
-          {/* ───────────── DEFAULT ROUTE ───────────── */}
+          {/* ================= DEFAULT ROUTES ================= */}
 
           <Route
             path="/"
