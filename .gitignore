@@ -1,9 +1,33 @@
-target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-*.class
-*.log
-.DS_Store
+# Root .gitignore
+cat > .gitignore << 'EOF'
+# Backend
+backend/target/
+backend/*.class
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+*.jar
+*.war
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+
+# IDE
 .idea/
+.vscode/
 *.iml
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.*
+!.env.example
+EOF

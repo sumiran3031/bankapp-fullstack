@@ -9,3 +9,4 @@ target/
 *.iml
 .env
 application-local.properties
+src/main/resources/application.properties

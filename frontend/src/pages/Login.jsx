@@ -15,25 +15,19 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-900 flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="text-7xl mb-3">🏦</div>
-          <h1 className="text-4xl font-bold text-white">BankApp Pro</h1>
-          <p className="text-blue-200 mt-1">Secure Banking at your fingertips</p>
+          <span className="text-5xl">🏦</span>
+          <h1 className="text-2xl font-bold text-gray-800 mt-3">BankApp Pro</h1>
+          <p className="text-gray-500 text-sm mt-1">Sign in to your account</p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-2xl">
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
-            Welcome Back 👋
-          </h2>
-
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
           {error && (
-            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-xl">
-              <p className="text-red-600 dark:text-red-400 text-sm font-medium">
-                ❌ {error}
-              </p>
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-600 text-sm">❌ {error}</p>
             </div>
           )}
 
@@ -60,20 +54,16 @@ export default function Login() {
                 className="input"
               />
             </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary w-full py-3 text-base"
-            >
-              {loading ? '⏳ Logging in...' : '🔐 Login'}
+            <button type="submit" disabled={loading}
+              className="btn-primary w-full py-2.5">
+              {loading ? '⏳ Signing in...' : 'Sign In'}
             </button>
           </form>
 
-          <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
+          <p className="text-center text-sm text-gray-500 mt-5">
             Don't have an account?{' '}
-            <Link to="/register"
-              className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
-              Register here
+            <Link to="/register" className="text-blue-600 font-semibold hover:underline">
+              Register
             </Link>
           </p>
         </div>
