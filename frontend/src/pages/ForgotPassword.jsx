@@ -16,7 +16,7 @@ export default function ForgotPassword() {
     setError('')
 
     try {
-      const response = await apiClient.post('/auth/forgot-password', {
+      const response = await apiClient.post('/api/auth/forgot-password', {
         email,
       })
 
@@ -27,6 +27,7 @@ export default function ForgotPassword() {
     } catch (err) {
       setError(
         err.response?.data?.error ||
+          err.response?.data ||
           'Unable to process your request. Please try again.'
       )
     } finally {
@@ -38,7 +39,6 @@ export default function ForgotPassword() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
 
-        {/* Logo */}
         <div className="text-center mb-8">
           <span className="text-5xl">🏦</span>
 
@@ -53,7 +53,6 @@ export default function ForgotPassword() {
 
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
 
-          {/* Success */}
           {message && (
             <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
               <p className="text-green-600 text-sm">
@@ -62,7 +61,6 @@ export default function ForgotPassword() {
             </div>
           )}
 
-          {/* Error */}
           {error && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
               <p className="text-red-600 text-sm">
@@ -98,9 +96,7 @@ export default function ForgotPassword() {
               disabled={loading}
               className="btn-primary w-full py-2.5"
             >
-              {loading
-                ? '⏳ Sending...'
-                : 'Send Reset Link'}
+              {loading ? '⏳ Sending...' : 'Send Reset Link'}
             </button>
 
           </form>
