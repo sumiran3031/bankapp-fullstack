@@ -10,3 +10,4 @@ target/
 .env
 application-local.properties
 src/main/resources/application.properties
+src/main/resources/application-prod.properties
