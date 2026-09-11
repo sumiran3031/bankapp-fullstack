@@ -1,17 +1,25 @@
 package com.sumiran.bankapp.config;
 
+import com.sumiran.bankapp.repository.UserRepository;
 import com.sumiran.bankapp.security.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -19,46 +27,48 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
+    private final UserRepository userRepository;
+
+    // ─── UserDetailsService — stops Spring Boot generating random password ───
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return email -> {
+            var user = userRepository.findByEmail(email)
+                    .orElseThrow(() ->
+                            new UsernameNotFoundException(
+                                    "User not found: " + email));
+            return new org.springframework.security.core.userdetails.User(
+                    user.getEmail(),
+                    user.getPassword(),
+                    List.of(new SimpleGrantedAuthority(user.getRole()))
+            );
+        };
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         return http
-                // Disable CSRF because this is a stateless JWT REST API
                 .csrf(csrf -> csrf.disable())
-
-                // Enable CORS
                 .cors(cors -> {})
-
-                // No HTTP session
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
-                                SessionCreationPolicy.STATELESS
-                        )
-                )
-
-                // Authorization rules
+                                SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-
-                        // Allow browser CORS preflight requests
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
-                        // Public authentication endpoints
                         .requestMatchers("/api/auth/**").permitAll()
-
-                        // Admin endpoints
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-
-                        // Everything else requires JWT
                         .anyRequest().authenticated()
                 )
-
-                // JWT authentication
                 .addFilterBefore(
                         jwtFilter,
-                        UsernamePasswordAuthenticationFilter.class
-                )
-
+                        UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

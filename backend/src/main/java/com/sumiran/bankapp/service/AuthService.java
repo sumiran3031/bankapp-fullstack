@@ -9,6 +9,7 @@ import com.sumiran.bankapp.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -26,13 +27,16 @@ public class AuthService {
     // ─────────────────────────────────────────────────────────
     // REGISTER
     // ─────────────────────────────────────────────────────────
+    @Transactional
     public AuthResponse register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already registered");
         }
 
-        if (userRepository.existsByPhone(request.getPhone())) {
+        if (request.getPhone() != null &&
+                !request.getPhone().isBlank() &&
+                userRepository.existsByPhone(request.getPhone())) {
             throw new RuntimeException("Phone already registered");
         }
 
@@ -65,6 +69,7 @@ public class AuthService {
     // ─────────────────────────────────────────────────────────
     // LOGIN
     // ─────────────────────────────────────────────────────────
+    @Transactional(readOnly = true)
     public AuthResponse login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
@@ -74,7 +79,6 @@ public class AuthService {
         if (!passwordEncoder.matches(
                 request.getPassword(),
                 user.getPassword())) {
-
             throw new RuntimeException("Invalid email or password");
         }
 
@@ -100,15 +104,17 @@ public class AuthService {
     // ─────────────────────────────────────────────────────────
     // FORGOT PASSWORD
     // ─────────────────────────────────────────────────────────
+    @Transactional
     public void forgotPassword(ForgotPasswordRequest request) {
 
         userRepository.findByEmail(request.getEmail())
                 .ifPresent(user -> {
 
-                    // Delete previous reset token if one exists
+                    // Delete previous token if exists
                     passwordResetTokenRepository.deleteByUser(user);
+                    // Flush needed so delete completes before insert
+                    passwordResetTokenRepository.flush();
 
-                    // Generate a unique reset token
                     String token = UUID.randomUUID().toString();
 
                     PasswordResetToken resetToken =
@@ -124,7 +130,6 @@ public class AuthService {
 
                     passwordResetTokenRepository.save(resetToken);
 
-                    // Link sent to user's email
                     String resetLink =
                             "https://bankapp.sumiranpaparkar.me/reset-password?token="
                                     + token;
@@ -139,6 +144,7 @@ public class AuthService {
     // ─────────────────────────────────────────────────────────
     // RESET PASSWORD
     // ─────────────────────────────────────────────────────────
+    @Transactional
     public void resetPassword(ResetPasswordRequest request) {
 
         PasswordResetToken resetToken =
@@ -152,26 +158,20 @@ public class AuthService {
 
         if (resetToken.isUsed()) {
             throw new RuntimeException(
-                    "Reset token has already been used"
-            );
+                    "Reset token has already been used");
         }
 
         if (resetToken.isExpired()) {
             throw new RuntimeException(
-                    "Reset token has expired"
-            );
+                    "Reset token has expired");
         }
 
         User user = resetToken.getUser();
-
-        // Encode the new password using BCrypt
         user.setPassword(
                 passwordEncoder.encode(request.getNewPassword())
         );
-
         userRepository.save(user);
 
-        // Make token unusable after successful reset
         resetToken.setUsed(true);
         passwordResetTokenRepository.save(resetToken);
     }

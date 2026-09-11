@@ -25,7 +25,8 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(unique = true, nullable = false)
+    // Phone is optional — unique only when provided
+    @Column(unique = true, nullable = true)
     private String phone;
 
     private String address;
